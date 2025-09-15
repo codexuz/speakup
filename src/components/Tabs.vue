@@ -21,7 +21,7 @@ import { Clapperboard, UserRound } from 'lucide-vue-next';
           <ion-label>Video</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button tab="result" href="/result">
+        <ion-tab-button tab="report" href="/report">
           <Result />
           <ion-label>Natijam</ion-label>
         </ion-tab-button>

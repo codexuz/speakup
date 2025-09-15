@@ -14,6 +14,11 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/response-detail/:id",
+    component: () => import("@/views/ResponseDetail.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/speaking/part-1.1/:id",
     component: () => import("@/views/speaking/part-1.1/test.vue"),
     meta: { requiresAuth: true },
@@ -102,7 +107,7 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: "/result",
+        path: "/report",
         name: "Report",
         component: () => import("@/views/Report.vue"),
       },

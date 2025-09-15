@@ -1,6 +1,14 @@
 import api, { useApi } from "./api";
 // Initialize the API composable
-const { get, post, patch, delete: del, loading, error, postFormData } = useApi();
+const {
+  get,
+  post,
+  patch,
+  delete: del,
+  loading,
+  error,
+  postFormData,
+} = useApi();
 
 // Define API endpoints as functions
 export const endpoints = {
@@ -30,6 +38,11 @@ export const endpoints = {
     getPartById: (id) => get(`/speaking-parts/${id}`),
     saveRecording: (file) => postFormData("/upload", file),
     uploadResponse: (data) => post("/speaking-response", data),
+    getResponsesByTest: (testId, userId) =>
+      get(`/speaking-response/user/${userId}/test/${testId}`),
+    getAllResponses: (userId) => get(`/speaking-response/user/${userId}`),
+    getResponseById: (responseId) => get(`/speaking-response/${responseId}`),
+    deleteResponse: (responseId) => del(`/speaking-response/${responseId}`),
   },
 
   // Add your custom endpoints here...

@@ -28,6 +28,7 @@
           length="6"
           shape="round"
           fill="solid"
+          class="custom"
         >
         </ion-input-otp>
       </div>
@@ -37,7 +38,6 @@
         class="ion-margin-top mb-5"
         mode="ios"
         expand="block"
-        color="primary"
         shape="round"
         :disabled="apiLoading || loading"
       >
@@ -166,6 +166,16 @@ function handleInput(event) {
 </script>
 
 <style scoped>
+ion-input-otp.custom {
+    --separator-color: rgb(90, 23, 237, 0.12);
+    --highlight-color-focused: #5a17ed;
+  }
+
+  .input-otp-fill-solid.custom {
+    --border-color: rgb(90, 23, 237, 0.6);
+    --color: #5a17ed;
+  }
+
 ion-toolbar {
   --background: #121212;
 }

@@ -140,7 +140,8 @@ import {
   IonThumbnail,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonInputOtp
+  IonInputOtp,
+  IonItemSliding,
 } from "@ionic/vue";
 
 const app = createApp(App)
@@ -197,8 +198,9 @@ app.component("ion-accordion-group", IonAccordionGroup);
 app.component("ion-textarea", IonTextarea);
 app.component("ion-footer", IonFooter);
 app.component("ion-badge", IonBadge);
-app.component("ion-option", IonItemOption);
-app.component("ion-options", IonItemOptions);
+app.component("ion-item-option", IonItemOption);
+app.component("ion-item-options", IonItemOptions);
+app.component("ion-item-sliding", IonItemSliding);
 app.component("ion-list", IonList);
 app.component("ion-list-header", IonListHeader);
 app.component("ion-spinner", IonSpinner);

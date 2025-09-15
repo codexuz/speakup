@@ -9,7 +9,7 @@ loadUser();
 // Create an instance of axios with default configuration
 const api = axios.create({
   // Base URL for all API requests
-  baseURL: "https://impulse-speaking.jkturn.easypanel.host",
+  baseURL: "https://speak.impulselc.uz",
   timeout: 30000, // 30 seconds timeout
   headers: {
     "Content-Type": "application/json",

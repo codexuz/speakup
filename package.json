@@ -1,5 +1,5 @@
 {
-  "name": "myApp",
+  "name": "SpeakUp",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -85,5 +85,5 @@
     "vite-plugin-pwa": "^1.0.3",
     "vitest": "^0.34.6"
   },
-  "description": "An Ionic project"
+  "description": "Speaking App"
 }

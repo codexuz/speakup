@@ -1,5 +1,5 @@
 {
-  "background_color": "#eeeeee",
+  "background_color": "#212121",
   "icons": [
     {
       "src": "../icons/icon-48.webp",
@@ -43,5 +43,10 @@
       "sizes": "512x512",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "display": "fullscreen",
+  "name": "SpeakUp - Speaking Assessment App",
+  "short_name": "SpeakUp",
+  "start_url": "/",
+  "theme_color": "#212121"
 }

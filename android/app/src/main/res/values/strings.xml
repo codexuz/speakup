@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Speak Up</string>
+    <string name="title_activity_main">Speak Up</string>
+    <string name="package_name">uz.speakup.edumo</string>
+    <string name="custom_url_scheme">uz.speakup.edumo</string>
+</resources>
