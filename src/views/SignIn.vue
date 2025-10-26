@@ -7,7 +7,7 @@
     </ion-header>
     <ion-content class="ion-padding" scroll-y="true">
 
-      <ion-grid>
+      <ion-grid class="p-4">
         <ion-row class="ion-margin-top items-center justify-center mx-auto gap-x-4 gap-y-2">
           <ion-col size="12" size-md="6" size-lg="4">
             <img src="@/assets/bg.svg" class="w-[250px] sm:w-[300px] mx-auto" />

@@ -514,7 +514,7 @@ onBeforeUnmount(() => {
 }
 
 .question-content {
-  color: #f8f8f8;
+  color: #000000;
   line-height: 1.6;
 }
 

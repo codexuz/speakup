@@ -88,20 +88,10 @@
                       
                       <ion-button
                         size="medium"
-                        color="warning"
-                        class="action-button"
-                        @click="openPaymentInstructions(test.id)"
-                        v-if="isLocked(test.id)"
-                      >
-                        <ion-icon :icon="lockOpenOutline" slot="start"></ion-icon>
-                        Unlock
-                      </ion-button>
-                      <ion-button
-                        size="medium"
                         color="primary"
                         class="action-button"
                         @click="purchaseTest(test.id)"
-                        v-else-if="!isPurchased(test.id)"
+                        v-if="!isPurchased(test.id)"
                       >
                         <ion-icon :icon="cardOutline" slot="start"></ion-icon>
                         Purchase
@@ -227,92 +217,18 @@
       </ion-grid>
     </ion-content>
 
-    <!-- Premium Payment Instructions Modal -->
-    <ion-modal
-      :is-open="showBottomSheet"
-      @didDismiss="showBottomSheet = false"
-      :initial-breakpoint="0.75"
-      :breakpoints="[0, 0.25, 0.5, 0.75]"
-      handle-behavior="cycle"
-      class="payment-modal"
-    >
-      <ion-content class="modal-content ion-padding">
-        <ion-grid>
-          <ion-row class="ion-justify-content-center">
-            <ion-col size="12" size-md="10" size-lg="8">
-              <div class="modal-header mt-4">
-                <div class="modal-icon">
-                  <ion-icon :icon="diamondOutline"></ion-icon>
-                </div>
-                <h2 class="modal-title">Unlock Premium Test</h2>
-                <p class="modal-subtitle">Get access to professional IELTS speaking practice</p>
-              </div>
 
-              <div class="payment-steps p-3">
-                <h4 class="steps-title">How to Purchase</h4>
-                <div class="steps-container">
-                  <div class="step-item">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                      <h5>Contact Admin</h5>
-                      <p>Reach out to our admin via Telegram for assistance</p>
-                    </div>
-                  </div>
-                  <div class="step-item">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                      <h5>Payment Instructions</h5>
-                      <p>Admin will provide secure payment methods</p>
-                    </div>
-                  </div>
-                  <div class="step-item">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                      <h5>Instant Access</h5>
-                      <p>Test unlocked immediately after confirmation</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="modal-actions ion-padding">
-                <ion-button 
-                  expand="block" 
-                  color="primary" 
-                  class="primary-action"
-                  @click="openTelegram"
-                >
-                  <ion-icon :icon="paperPlane" slot="start"></ion-icon>
-                  Contact US via Telegram
-                </ion-button>
-
-                <ion-button
-                  expand="block"
-                  fill="outline"
-                  color="medium"
-                  class="secondary-action"
-                  @click="showBottomSheet = false"
-                >
-                  <ion-icon :icon="closeOutline" slot="start"></ion-icon>
-                  Close
-                </ion-button>
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-content>
-    </ion-modal>
   </ion-page>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { toastController, alertController } from "@ionic/vue";
 import endpoints from "@/utils/apiEndpoints";
 import { useUser } from "@/composables/useUser";
 import { 
   playOutline, 
-  closeOutline,
   micOutline,
   libraryOutline,
   checkmarkCircleOutline,
@@ -320,26 +236,20 @@ import {
   timeOutline,
   peopleOutline,
   diamondOutline,
-  lockOpenOutline,
   cardOutline,
   checkmarkOutline,
   documentTextOutline,
   checkmarkCircle,
   bagOutline,
   storefrontOutline,
-  paperPlane,
   playCircle
 } from "ionicons/icons";
 const router = useRouter();
-const { user } = useUser();
+const { user, updateUser } = useUser();
 const tests = ref([]);
 const userPurchases = ref([]);
 const loading = ref(true);
 const activeTab = ref("all");
-const showAlert = ref(false);
-const alertMessage = ref("");
-const showBottomSheet = ref(false);
-const selectedTestId = ref(null);
 
 // Computed properties for filtered tests
 const allTests = computed(() => tests.value);
@@ -353,24 +263,6 @@ const isPurchased = (testId) => {
 const isCompleted = (testId) => {
   const purchase = userPurchases.value.find((p) => p.test_id === testId);
   return purchase && purchase.status === "completed";
-};
-
-// Check if a test is locked and requires admin approval
-const isLocked = (testId) => {
-  const test = tests.value.find((t) => t.id === testId);
-  return test && test.requiresApproval && !isPurchased(testId);
-};
-
-// Function to open bottom sheet for payment instructions
-const openPaymentInstructions = (testId) => {
-  selectedTestId.value = testId;
-  showBottomSheet.value = true;
-};
-
-// Function to open Telegram
-const openTelegram = () => {
-  showBottomSheet.value = false;
-  window.location.href = "https://t.me/javlon_developer";
 };
 
 // Load tests and user purchases
@@ -407,25 +299,113 @@ const loadData = async () => {
   }
 };
 
-// Purchase a test (now opens payment instructions)
-const purchaseTest = (testId) => {
+// Purchase a test with balance checking
+const purchaseTest = async (testId) => {
   // Find the test to get its info
   const test = tests.value.find((t) => t.id === testId);
 
   if (!test) {
-    alertMessage.value = "Test not found.";
-    showAlert.value = true;
+    const toast = await toastController.create({
+      message: "Test not found.",
+      duration: 3000,
+      color: "danger",
+      position: "bottom"
+    });
+    await toast.present();
     return;
   }
 
   if (!user.value) {
-    alertMessage.value = "Please login to purchase tests.";
-    showAlert.value = true;
+    const toast = await toastController.create({
+      message: "Please login to purchase tests.",
+      duration: 3000,
+      color: "warning",
+      position: "bottom"
+    });
+    await toast.present();
     return;
   }
 
-  // Open bottom sheet with payment instructions
-  openPaymentInstructions(testId);
+  const testCost = 10000; // All tests cost 10,000 UZS
+
+  // Check if user has enough balance
+  if (!user.value.balance || user.value.balance < testCost) {
+    const toast = await toastController.create({
+      message: `Insufficient balance. You need ${testCost} UZS to purchase this test.`,
+      duration: 4000,
+      color: "danger",
+      position: "bottom"
+    });
+    await toast.present();
+    return;
+  }
+
+  // Show confirmation alert
+  const alert = await alertController.create({
+    header: 'Confirm Purchase',
+    message: `Do you want to purchase "${test.title}" for ${testCost} UZS?`,
+    buttons: [
+      {
+        text: 'Cancel',
+        role: 'cancel',
+        cssClass: 'secondary',
+      },
+      {
+        text: 'Purchase',
+        role: 'confirm',
+        handler: async () => {
+          await processPurchase(testId, testCost);
+        },
+      },
+    ],
+  });
+
+  await alert.present();
+};
+
+// Process the actual purchase
+const processPurchase = async (testId, testCost) => {
+  try {
+    loading.value = true;
+
+    // Make purchase API call
+    await endpoints.speaking.purchaseTests({
+      user_id: user.value.id,
+      status: "new",
+      test_id: testId,
+      cost: testCost
+    });
+
+    // Update user balance locally after successful purchase
+    if (user.value.balance >= testCost) {
+      const updatedBalance = user.value.balance - testCost;
+      await updateUser({ balance: updatedBalance });
+    }
+
+    // Show success message
+    const toast = await toastController.create({
+      message: "Test purchased successfully! You can now start the test.",
+      duration: 3000,
+      color: "success",
+      position: "bottom"
+    });
+    await toast.present();
+
+    // Reload data to update UI
+    await loadData();
+
+  } catch (error) {
+    console.error("Failed to purchase test:", error);
+    const toast = await toastController.create({
+      message: "No sufficient balance. Please top up your balance.",
+      duration: 3000,
+      color: "danger",
+      position: "bottom"
+    });
+    await toast.present();
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(() => {
@@ -766,123 +746,6 @@ onMounted(() => {
 .loading-spinner {
   --color: oklch(0.6 0.15 250);
   transform: scale(1.5);
-}
-
-/* Modal Styles */
-.payment-modal {
-  --border-radius: 24px 24px 0 0;
-}
-
-.modal-content {
-  --padding-start: 0;
-  --padding-end: 0;
-  padding: 2rem 1rem;
-}
-
-.modal-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.modal-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, oklch(0.95 0.05 250) 0%, oklch(0.97 0.03 200) 100%);
-  border-radius: 50%;
-  margin-bottom: 1.5rem;
-  border: 1px solid oklch(0.9 0.05 250);
-}
-
-.modal-icon ion-icon {
-  font-size: 2.5rem;
-  color: oklch(0.5 0.15 250);
-}
-
-.modal-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 0.5rem;
-}
-
-.modal-subtitle {
-  color: #6b7280;
-  font-size: 1rem;
-  margin: 0;
-}
-
-.payment-steps {
-  margin-bottom: 2rem;
-}
-
-.steps-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 1.5rem;
-}
-
-.steps-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.step-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1rem;
-  background: #f9fafb;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-}
-
-.step-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, oklch(0.7 0.15 250) 0%, oklch(0.8 0.1 200) 100%);
-  color: white;
-  border-radius: 50%;
-  font-weight: 700;
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.step-content h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 0.25rem;
-}
-
-.step-content p {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.modal-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.primary-action {
-  --border-radius: 12px;
-  font-weight: 600;
-}
-
-.secondary-action {
-  --border-radius: 12px;
-  font-weight: 600;
 }
 
 /* Responsive Design */

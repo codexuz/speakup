@@ -31,6 +31,7 @@ export const endpoints = {
     getAll: () => get("/speaking-tests/active/true"),
     getById: (testId) => get(`/speaking-tests/${testId}`),
     getPurchasedTests: () => get("/my-purchased-tests/user"),
+    purchaseTests: (data) => post("/my-purchased-tests", data),
     getPart1: () => get(`/speaking-parts/part-type/1.1`),
     getPart2: () => get(`/speaking-parts/part-type/1.2`),
     getPart3: () => get(`/speaking-parts/part-type/2`),

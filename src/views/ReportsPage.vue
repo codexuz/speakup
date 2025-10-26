@@ -5,7 +5,7 @@
         <ion-title> Reports </ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
+    <ion-content class="ion-padding" scroll-y="true">
       <ion-refresher
         mode="ios"
         slot="fixed"
@@ -21,7 +21,7 @@
           <ion-row>
             <ion-col size="12" size-md="8" size-lg="8" class="mx-auto">
               <!-- Reports Cards Grid -->
-              <div class="reports-grid mt-8">
+              <div class="reports-grid">
                 <div 
                   v-for="(response, index) in speakingResponses" 
                   :key="response.id"

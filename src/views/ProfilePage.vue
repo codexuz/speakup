@@ -24,7 +24,7 @@
                 </div>
                 <div class="border-b border-gray-300 pt-5"></div>
 
-                <ion-list :inset="true">
+                <ion-list>
                   <ion-item id="tariff-modal" :button="true">
                     <NotebookText class="w-5 h-5 mr-3" slot="start" />
                     <ion-label>Tariffs</ion-label>

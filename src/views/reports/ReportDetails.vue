@@ -65,14 +65,33 @@
                       <h2 class="score-title">Overall Score</h2>
                       <div class="cefr-level">
                         <span class="cefr-label">CEFR Level:</span>
-                        <p 
-                        class="text-lg poppins-bold"
+                        <ion-badge 
+                          :color="getCefrColor(response.response?.assessment?.aiAssessment?.cefr_level)"
+                          class="cefr-badge"
                         >
                           {{ response.response?.assessment?.aiAssessment?.cefr_level || "N/A" }}
-                        </p>
+                        </ion-badge>
+                      </div>
+                      <div class="speaking-stats">
+                        <div class="stat-item">
+                          <span class="stat-label">Speaking Rate:</span>
+                          <span class="stat-value">{{ Math.round(response.response?.assessment?.wpm || 0) }} WPM</span>
+                        </div>
+                        <div class="stat-item">
+                          <span class="stat-label">Duration:</span>
+                          <span class="stat-value">{{ formatDuration(response.response?.transcription_details?.total_duration) }}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <ion-button 
+                    fill="clear" 
+                    size="small" 
+                    class="info-btn"
+                    @click="showCefrInfo"
+                  >
+                    <ion-icon :icon="informationCircleOutline"></ion-icon>
+                  </ion-button>
                 </div>
               </ion-card>
 
@@ -123,6 +142,64 @@
                   <div class="feedback-text">
                     {{ response.response?.assessment?.aiAssessment?.feedback || "No detailed feedback available for this assessment." }}
                   </div>
+                </ion-card-content>
+              </ion-card>
+
+              <!-- Test Questions -->
+              <ion-card v-if="response.response?.assessment?.questions" class="questions-card">
+                <ion-card-header class="questions-header">
+                  <ion-card-title class="card-title">
+                    <ion-icon :icon="helpCircleOutline" class="title-icon"></ion-icon>
+                    Test Questions
+                  </ion-card-title>
+                </ion-card-header>
+                <ion-card-content class="questions-content">
+                  <div v-for="(questions, part) in response.response.assessment.questions" :key="part" class="question-part">
+                    <h3 class="part-title">Part {{ part }}</h3>
+                    <div v-for="(question, index) in questions" :key="index" class="question-item">
+                      <div class="question-text">{{ question }}</div>
+                    </div>
+                  </div>
+                </ion-card-content>
+              </ion-card>
+
+              <!-- Speaking Analysis -->
+              <ion-card v-if="response.response?.transcription_details" class="analysis-card">
+                <ion-card-header class="analysis-header">
+                  <ion-card-title class="card-title">
+                    <ion-icon :icon="analyticsOutline" class="title-icon"></ion-icon>
+                    Speaking Analysis
+                  </ion-card-title>
+                </ion-card-header>
+                <ion-card-content class="analysis-content">
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size="12" size-md="6">
+                        <div class="analysis-item">
+                          <div class="analysis-label">Word Count</div>
+                          <div class="analysis-value">{{ response.response.transcription_details.word_count || 0 }}</div>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" size-md="6">
+                        <div class="analysis-item">
+                          <div class="analysis-label">Confidence Score</div>
+                          <div class="analysis-value">{{ Math.round((response.response.transcription_details.confidence_score || 0) * 100) }}%</div>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" size-md="6">
+                        <div class="analysis-item">
+                          <div class="analysis-label">Filler Words</div>
+                          <div class="analysis-value">{{ response.response.transcription_details.filler_word_count || 0 }}</div>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" size-md="6">
+                        <div class="analysis-item">
+                          <div class="analysis-label">Average Pause</div>
+                          <div class="analysis-value">{{ Math.round((response.response.transcription_details.pause_analysis?.average_pause_duration || 0) * 100) / 100 }}s</div>
+                        </div>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
                 </ion-card-content>
               </ion-card>
 
@@ -224,38 +301,16 @@
                     >
                       {{ response.response.assessment.vocabularyLevel.meta?.grade || "N/A" }} Level
                     </ion-badge>
-                    <span class="word-count">{{ response.response.assessment.vocabularyLevel.meta?.words || 0 }} words used</span>
+                    <span class="word-count">{{ response.response.assessment.vocabularyLevel.meta?.words || 0 }} words</span>
                   </div>
                 </ion-card-header>
                 <ion-card-content class="vocabulary-content">
-                  <!-- CEFR Level Distribution -->
-                  <div class="vocab-distribution">
-                    <h3 class="section-title">CEFR Level Distribution</h3>
-                    <div class="distribution-grid">
-                      <div
-                        v-for="(value, level) in response.response.assessment.vocabularyLevel.meta?.levels"
-                        :key="level"
-                        class="distribution-item"
-                      >
-                        <div class="level-header">
-                          <span class="level-name">{{ level }}</span>
-                          <span class="level-percentage">{{ Math.round(value) }}%</span>
-                        </div>
-                        <ion-progress-bar
-                          :value="value / 100"
-                          :color="getCefrColor(level)"
-                          class="level-progress"
-                        ></ion-progress-bar>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Top Words -->
+                  <!-- Top Words Only -->
                   <div class="top-words-section">
-                    <h3 class="section-title">Most Frequently Used Words</h3>
+                    <h3 class="section-title">Most Used Words</h3>
                     <div class="words-grid">
                       <div
-                        v-for="([word, count], index) in getTopWords(12)"
+                        v-for="([word, count], index) in getTopWords(8)"
                         :key="index"
                         class="word-item"
                       >
@@ -300,7 +355,9 @@ import {
   informationOutline,
   chatbubblesOutline,
   speedometerOutline,
-  libraryOutline
+  libraryOutline,
+  helpCircleOutline,
+  analyticsOutline
 } from "ionicons/icons";
 import { endpoints } from "@/utils/apiEndpoints";
 
@@ -359,6 +416,14 @@ function getCefrColor(level) {
     C2: "tertiary",
   };
   return colors[level] || "medium";
+}
+
+function formatDuration(seconds) {
+  if (!seconds) return "0:00";
+  
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
 // Computed property for skills data
@@ -646,6 +711,39 @@ function getTopWords(count) {
   opacity: 0.9;
 }
 
+.cefr-badge {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 12px;
+}
+
+.speaking-stats {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
 
 
 .info-btn {
@@ -774,6 +872,104 @@ function getTopWords(count) {
   color: var(--ielts-text);
   font-size: 1rem;
   margin: 0;
+}
+
+/* Questions Card */
+.questions-card {
+  border-radius: 20px;
+  box-shadow: var(--ielts-shadow);
+  border: 1px solid var(--ielts-border);
+  background: white;
+}
+
+.questions-header {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  border-radius: 20px 20px 0 0;
+  border-bottom: 1px solid var(--ielts-border);
+}
+
+.questions-content {
+  padding: 2rem;
+}
+
+.question-part {
+  margin-bottom: 2rem;
+}
+
+.question-part:last-child {
+  margin-bottom: 0;
+}
+
+.part-title {
+  font-weight: 600;
+  color: var(--ielts-primary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ielts-border);
+}
+
+.question-item {
+  background: #fafbfc;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--ielts-border);
+}
+
+.question-item:last-child {
+  margin-bottom: 0;
+}
+
+.question-text {
+  color: var(--ielts-text);
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* Analysis Card */
+.analysis-card {
+  border-radius: 20px;
+  box-shadow: var(--ielts-shadow);
+  border: 1px solid var(--ielts-border);
+  background: white;
+}
+
+.analysis-header {
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  border-radius: 20px 20px 0 0;
+  border-bottom: 1px solid var(--ielts-border);
+}
+
+.analysis-content {
+  padding: 2rem;
+}
+
+.analysis-item {
+  background: #fafbfc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--ielts-border);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.analysis-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+}
+
+.analysis-label {
+  font-size: 0.9rem;
+  color: var(--ielts-text);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.analysis-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ielts-primary);
 }
 
 /* Transcript Card */
@@ -1130,12 +1326,18 @@ function getTopWords(count) {
     align-items: flex-start;
   }
   
-  .distribution-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .words-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .speaking-stats {
+    gap: 0.75rem;
+  }
+  
+  .stat-item {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
   }
 }
 
