@@ -1,7 +1,0 @@
-{
-  "name": "SpeakUp",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "vue-vite"
-}
