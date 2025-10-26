@@ -136,7 +136,7 @@
                 </ion-card-header>
                 <ion-card-content class="transcript-content">
                   <!-- Audio Player -->
-                  <div v-if="response.audio_url || response.response?.audio_url" class="audio-section">
+                  <div v-if="response.audio_url" class="audio-section">
                     <div class="audio-header">
                       <ion-icon :icon="playOutline" class="audio-icon"></ion-icon>
                       <span class="audio-label">Audio Recording</span>
@@ -144,7 +144,7 @@
                     <div class="audio-player">
                       <audio controls class="custom-audio">
                         <source
-                          :src="response.audio_url || response.response?.audio_url"
+                          :src="response.audio_url"
                           type="audio/mpeg"
                         />
                         Your browser does not support audio playback.
@@ -159,7 +159,7 @@
                       <span class="transcript-label">Transcript</span>
                     </div>
                     <div class="transcript-box">
-                      {{ response.response?.assessment?.transcript || "No transcript available for this recording." }}
+                      {{ response.transcript || response.response?.assessment?.transcript || "No transcript available for this recording." }}
                     </div>
                   </div>
                 </ion-card-content>
@@ -207,6 +207,63 @@
                       </ion-col>
                     </ion-row>
                   </ion-grid>
+                </ion-card-content>
+              </ion-card>
+
+              <!-- Vocabulary Analysis -->
+              <ion-card v-if="response.response?.assessment?.vocabularyLevel" class="vocabulary-card">
+                <ion-card-header class="vocabulary-header">
+                  <ion-card-title class="card-title">
+                    <ion-icon :icon="libraryOutline" class="title-icon"></ion-icon>
+                    Vocabulary Analysis
+                  </ion-card-title>
+                  <div class="vocab-summary">
+                    <ion-badge 
+                      :color="getCefrColor(response.response.assessment.vocabularyLevel.meta?.grade)"
+                      class="vocab-level-badge"
+                    >
+                      {{ response.response.assessment.vocabularyLevel.meta?.grade || "N/A" }} Level
+                    </ion-badge>
+                    <span class="word-count">{{ response.response.assessment.vocabularyLevel.meta?.words || 0 }} words used</span>
+                  </div>
+                </ion-card-header>
+                <ion-card-content class="vocabulary-content">
+                  <!-- CEFR Level Distribution -->
+                  <div class="vocab-distribution">
+                    <h3 class="section-title">CEFR Level Distribution</h3>
+                    <div class="distribution-grid">
+                      <div
+                        v-for="(value, level) in response.response.assessment.vocabularyLevel.meta?.levels"
+                        :key="level"
+                        class="distribution-item"
+                      >
+                        <div class="level-header">
+                          <span class="level-name">{{ level }}</span>
+                          <span class="level-percentage">{{ Math.round(value) }}%</span>
+                        </div>
+                        <ion-progress-bar
+                          :value="value / 100"
+                          :color="getCefrColor(level)"
+                          class="level-progress"
+                        ></ion-progress-bar>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Top Words -->
+                  <div class="top-words-section">
+                    <h3 class="section-title">Most Frequently Used Words</h3>
+                    <div class="words-grid">
+                      <div
+                        v-for="([word, count], index) in getTopWords(12)"
+                        :key="index"
+                        class="word-item"
+                      >
+                        <span class="word-text">{{ word }}</span>
+                        <span class="word-count">{{ count }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </ion-card-content>
               </ion-card>
 
@@ -312,31 +369,31 @@ const skillsData = computed(() => {
   return [
     {
       name: "Fluency & Coherence",
-      score: assessment.fluency_score || 0,
+      score: assessment.fluency || 0,
       color: "primary",
       icon: chatbubblesOutline,
-      feedback: "Your speech flow and logical organization of ideas."
+      feedback: assessment.fluencyFeedback || "Your speech flow and logical organization of ideas."
     },
     {
       name: "Pronunciation",
-      score: assessment.pronunciation_score || 0,
+      score: assessment.pronunciation || 0,
       color: "success", 
       icon: volumeHighOutline,
-      feedback: "Clarity and accuracy of sound production."
+      feedback: assessment.pronunciationFeedback || "Clarity and accuracy of sound production."
     },
     {
       name: "Lexical Resource",
-      score: assessment.vocabulary_score || 0,
+      score: assessment.vocabulary || 0,
       color: "tertiary",
       icon: libraryOutline,
-      feedback: "Range and accuracy of vocabulary usage."
+      feedback: assessment.vocabularyFeedback || "Range and accuracy of vocabulary usage."
     },
     {
       name: "Grammar",
-      score: assessment.grammar_score || 0,
+      score: assessment.grammar || 0,
       color: "warning",
       icon: textOutline,
-      feedback: "Grammatical range and accuracy in your responses."
+      feedback: assessment.grammarFeedback || "Grammatical range and accuracy in your responses."
     }
   ];
 });
@@ -364,10 +421,7 @@ function getTopWords(count) {
     return [];
   }
 
-  return response.value.response.assessment.vocabularyLevel.words.slice(
-    0,
-    count
-  );
+  return response.value.response.assessment.vocabularyLevel.words.slice(0, count);
 }
 </script>
 
@@ -895,6 +949,133 @@ function getTopWords(count) {
   font-weight: 600;
 }
 
+/* Vocabulary Analysis Card */
+.vocabulary-card {
+  border-radius: 20px;
+  box-shadow: var(--ielts-shadow);
+  border: 1px solid var(--ielts-border);
+  background: white;
+}
+
+.vocabulary-header {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-radius: 20px 20px 0 0;
+  border-bottom: 1px solid var(--ielts-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vocab-summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vocab-level-badge {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+
+.word-count {
+  color: var(--ielts-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.vocabulary-content {
+  padding: 2rem;
+}
+
+.vocab-distribution {
+  margin-bottom: 2rem;
+}
+
+.distribution-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.distribution-item {
+  background: #fafbfc;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--ielts-border);
+}
+
+.level-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.level-name {
+  font-weight: 600;
+  color: var(--ielts-dark);
+}
+
+.level-percentage {
+  font-weight: 600;
+  color: var(--ielts-primary);
+  font-size: 0.9rem;
+}
+
+.level-progress {
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.top-words-section {
+  margin-top: 2rem;
+}
+
+.words-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.word-item {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid var(--ielts-border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.word-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 102, 204, 0.1);
+}
+
+.word-text {
+  font-weight: 500;
+  color: var(--ielts-dark);
+  font-size: 0.9rem;
+}
+
+.word-count {
+  background: var(--ielts-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .assessment-grid {
@@ -941,6 +1122,20 @@ function getTopWords(count) {
   .participant-info {
     flex-direction: column;
     text-align: center;
+  }
+  
+  .vocab-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .distribution-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .words-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 }
 
