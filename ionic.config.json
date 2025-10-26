@@ -1,0 +1,7 @@
+{
+  "name": "speakup_webapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
