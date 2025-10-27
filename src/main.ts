@@ -82,7 +82,8 @@ import {
   IonBreadcrumbs,
   IonFooter,
   IonInputOtp,
-  IonRippleEffect
+  IonRippleEffect,
+  IonSkeletonText
 } from '@ionic/vue';
 import Avatar from '@/components/Avatar.vue';
 
@@ -118,8 +119,7 @@ import './theme/variables.css';
 
 const app = createApp(App)
   .use(IonicVue, {
-    mode: 'ios',
-    rippleEffect: true
+    mode: 'ios'
   })
   .use(router)
   .use(AVPlugin);
@@ -201,7 +201,7 @@ app.component('IonBreadcrumbs', IonBreadcrumbs);
 app.component('IonFooter', IonFooter);  
 app.component('IonRippleEffect', IonRippleEffect);
 app.component('IonInputOtp', IonInputOtp);
-app.component('Avatar', Avatar);
+app.component('IonSkeletonText', IonSkeletonText);
 router.isReady().then(() => {
   app.mount('#app');
 });

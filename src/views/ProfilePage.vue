@@ -43,9 +43,9 @@
             </ion-card>
           </ion-col>
         </ion-row>
-        <ion-row class="ion-margin-top items-center justify-center">
+        <ion-row class="ion-margin-top px-2 items-center justify-center">
           <ion-col size="12" size-md="6" size-lg="6" size-sm="12">
-            <ion-button id="open-modal" class="mx-auto ion-margin-top" expand="block" color="danger">
+            <ion-button id="open-modal" class="mx-auto" expand="block" color="danger">
         <LogOut class="w-5 h-5 mr-2" />
         Logout
       </ion-button>
