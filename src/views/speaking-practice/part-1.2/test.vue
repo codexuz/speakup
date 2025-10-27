@@ -35,6 +35,16 @@
             v-html="question.content || question.question"
           ></div>
 
+           <div
+            class="mb-5"
+          >
+           <img
+              v-if="question.image_url"
+              :src="question.image_url"
+              alt="Question Image"
+              class="w-full h-auto rounded-xl mb-4"/>
+        </div>
+
           <ion-accordion-group>
             <ion-accordion value="sample-answer">
               <ion-item slot="header" color="light">
