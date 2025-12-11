@@ -345,29 +345,9 @@
               </ion-card>
 
               <!-- Audio Recording -->
-              <ion-card class="rounded-xl" v-if="audioUrl && isAudioValid">
-                <ion-card-content>
-                  <ion-card-title class="text-gray-800 text-md mb-2">
-                    <span class="flex items-center gap-2">
-                      Audio Recording
-                    </span>
-                  </ion-card-title>
-                  <div class="flex items-center gap-1">
-                    <button
-                      @click="togglePlayPause"
-                      v-if="wavesurfer"
-                      style="border-radius: 50%"
-                      class="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors flex items-center justify-center text-white shadow-lg"
-                    >
-                      <ion-icon
-                        :icon="isPlaying ? pauseOutline : playOutline"
-                        class="text-2xl"
-                      ></ion-icon>
-                    </button>
-                    <div ref="container" class="flex-1"></div>
+                    <div style="max-width: 100%" class="bg-white py-2 px-3 rounded-xl overflow-hidden" v-if="audioUrl && isAudioValid">
+                    <audio :src="audioUrl" controls class="w-full"></audio>
                   </div>
-                </ion-card-content>
-              </ion-card>
 
               <!-- Audio Error Message -->
               <ion-card
@@ -489,16 +469,13 @@ import {
 import { endpoints } from "@/utils/apiEndpoints";
 import LevelGauge from "@/components/LevelGauge.vue";
 import RangeSlider from "@/components/RangeSlider.vue";
-import WaveSurfer from "wavesurfer.js";
+import Vue3WaveAudioPlayer from "vue3-wave-audio-player";
 
 const route = useRoute();
 const responseId = ref(route.params.id);
 const response = ref(null);
 const loading = ref(true);
 const error = ref(null);
-const container = useTemplateRef("container");
-const wavesurfer = ref(null);
-const isPlaying = ref(false);
 const isAudioValid = ref(false);
 const audioLoadError = ref(null);
 
@@ -516,11 +493,6 @@ async function loadResponseData() {
       // Check if audio URL is valid and playable
       if (audioUrl.value) {
         await checkAudioValidity();
-      }
-
-      // Initialize WaveSurfer after response is loaded and audio is valid
-      if (container.value && audioUrl.value && isAudioValid.value) {
-        await initializeWaveSurfer();
       }
     } else {
       error.value = "Could not find the response";
@@ -606,71 +578,6 @@ async function checkAudioValidity() {
     console.error("Audio validation failed:", err);
     audioLoadError.value = err.message || "Failed to load audio file";
     isAudioValid.value = false;
-  }
-}
-
-async function initializeWaveSurfer() {
-  try {
-    if (!container.value || !audioUrl.value || !isAudioValid.value) return;
-
-    // Destroy existing instance if any
-    if (wavesurfer.value) {
-      wavesurfer.value.destroy();
-    }
-
-    // Create new WaveSurfer instance
-    wavesurfer.value = WaveSurfer.create({
-      container: container.value,
-      waveColor: "#A0AEC0",
-      progressColor: "#3182CE",
-      height: 35,
-      width: "90%",
-      responsive: true,
-      normalize: true,
-      barWidth: 2,
-      barGap: 1,
-      cursorWidth: 0,
-      // Add CORS configuration for audio loading
-      fetchParams: {
-        mode: "cors",
-        credentials: "omit",
-      },
-      // Enable cross-origin for audio element
-      mediaControls: false,
-      backend: "WebAudio",
-    });
-
-    // Add event listeners
-    wavesurfer.value.on("play", () => {
-      isPlaying.value = true;
-    });
-
-    wavesurfer.value.on("pause", () => {
-      isPlaying.value = false;
-    });
-
-    wavesurfer.value.on("finish", () => {
-      isPlaying.value = false;
-    });
-
-    wavesurfer.value.on("error", (error) => {
-      console.error("WaveSurfer error:", error);
-      audioLoadError.value = "Failed to load audio waveform";
-      isAudioValid.value = false;
-    });
-
-    // Load the audio file
-    await wavesurfer.value.load(audioUrl.value);
-  } catch (err) {
-    console.error("Failed to initialize WaveSurfer:", err);
-    audioLoadError.value = err.message || "Failed to initialize audio player";
-    isAudioValid.value = false;
-  }
-}
-
-function togglePlayPause() {
-  if (wavesurfer.value) {
-    wavesurfer.value.playPause();
   }
 }
 
@@ -995,33 +902,11 @@ async function sendFeedTelegram() {
 // Lifecycle hooks - must be after all computed properties are defined
 onMounted(async () => {
   await loadResponseData();
-
-  // Initialize WaveSurfer after data is loaded, container is available, and audio is valid
-  if (container.value && audioUrl.value && isAudioValid.value) {
-    initializeWaveSurfer();
-  }
-});
-
-// Watch for changes in audioUrl to reinitialize WaveSurfer
-watch(audioUrl, async (newUrl) => {
-  if (newUrl && container.value) {
-    await checkAudioValidity();
-    if (isAudioValid.value) {
-      initializeWaveSurfer();
-    }
-  }
 });
 
 // Cleanup on unmount
 onBeforeUnmount(() => {
-  if (wavesurfer.value) {
-    // Pause the audio before destroying
-    if (wavesurfer.value.isPlaying()) {
-      wavesurfer.value.pause();
-    }
-    wavesurfer.value.destroy();
-    wavesurfer.value = null;
-  }
+  // Cleanup handled by Vue3WaveAudioPlayer component
 });
 </script>
 
