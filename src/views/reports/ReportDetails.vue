@@ -345,9 +345,18 @@
               </ion-card>
 
               <!-- Audio Recording -->
-                    <div style="max-width: 100%" class="bg-white py-2 px-3 rounded-xl overflow-hidden" v-if="audioUrl && isAudioValid">
-                    <audio :src="audioUrl" controls class="w-full"></audio>
-                  </div>
+              <div
+                style="max-width: 100%"
+                class="bg-white py-2 px-3 rounded-xl overflow-hidden"
+                v-if="audioUrl && isAudioValid"
+              >
+                <audio
+                  :src="audioUrl"
+                  controls
+                  class="w-full"
+                  crossorigin="anonymous"
+                ></audio>
+              </div>
 
               <!-- Audio Error Message -->
               <ion-card
@@ -469,7 +478,6 @@ import {
 import { endpoints } from "@/utils/apiEndpoints";
 import LevelGauge from "@/components/LevelGauge.vue";
 import RangeSlider from "@/components/RangeSlider.vue";
-import Vue3WaveAudioPlayer from "vue3-wave-audio-player";
 
 const route = useRoute();
 const responseId = ref(route.params.id);
