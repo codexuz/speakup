@@ -10,16 +10,25 @@
 
     <ion-content class="ion-padding">
       <ion-grid>
-        <ion-row class="ion-margin-top items-center justify-center mx-auto gap-x-4 gap-y-2">
+        <ion-row
+          class="ion-margin-top items-center justify-center mx-auto gap-x-4 gap-y-2"
+        >
           <ion-col size="12" size-md="6" size-lg="6" size-sm="12">
-            <ion-card class="rounded-2xl mx-auto shadow-none border border-gray-200 mt-4">
+            <ion-card
+              class="rounded-2xl mx-auto shadow-none border border-gray-200 mt-4"
+            >
               <ion-card-content>
                 <div class="flex items-center gap-x-3">
-                  <Avatar :firstName=" user?.first_name || user?.last_name || 'User'" backgroundColor="dodgerblue" />
+                  <Avatar
+                    :firstName="user?.first_name || user?.last_name || 'User'"
+                    backgroundColor="dodgerblue"
+                  />
                   <ion-card-title class="poppins-bold text-xl sm:text-3xl">
                     {{ user?.first_name || user?.last_name || "User" }}
 
-                    <p class="poppins-regular text-sm text-gray-600">{{ user?.username ? "@" + user.username : "no username" }}</p>
+                    <p class="poppins-regular text-sm text-gray-600">
+                      {{ user?.username ? "@" + user.username : "no username" }}
+                    </p>
                   </ion-card-title>
                 </div>
                 <div class="border-b border-gray-300 pt-5"></div>
@@ -32,9 +41,15 @@
                   <ion-item :button="true">
                     <Wallet class="w-5 h-5 mr-3" slot="start" />
                     <ion-label>Balance</ion-label>
-                    <ion-label slot="end">{{ user?.balance ?  user.balance + ' UZS' : 0 + ' UZS' }}</ion-label>
+                    <ion-label slot="end">{{
+                      user?.balance ? user.balance + " UZS" : 0 + " UZS"
+                    }}</ion-label>
                   </ion-item>
-                  <ion-item href="https://t.me/javlon_developer" target="_blank" :button="true">
+                  <ion-item
+                    href="https://t.me/javlon_developer"
+                    target="_blank"
+                    :button="true"
+                  >
                     <Send class="w-5 h-5 mr-3" slot="start" />
                     <ion-label>Contact Us</ion-label>
                   </ion-item>
@@ -45,20 +60,27 @@
         </ion-row>
         <ion-row class="ion-margin-top px-2 items-center justify-center">
           <ion-col size="12" size-md="6" size-lg="6" size-sm="12">
-            <ion-button id="open-modal" class="mx-auto" expand="block" color="danger">
-        <LogOut class="w-5 h-5 mr-2" />
-        Logout
-      </ion-button>
+            <ion-button
+              id="open-modal"
+              class="mx-auto"
+              expand="block"
+              color="danger"
+            >
+              <LogOut class="w-5 h-5 mr-2" />
+              Logout
+            </ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
-
-     
     </ion-content>
 
-
     <!-- Logout Confirmation Modal -->
-    <ion-modal ref="modal" trigger="open-modal" :initial-breakpoint="0.4" :breakpoints="[0, 0.4]">
+    <ion-modal
+      ref="modal"
+      trigger="open-modal"
+      :initial-breakpoint="0.4"
+      :breakpoints="[0, 0.4]"
+    >
       <ion-content class="modal-content">
         <div class="logout-modal">
           <div class="modal-header mt-4">
@@ -67,11 +89,22 @@
           </div>
 
           <div class="modal-actions">
-            <ion-button @click="handleLogout" color="primary" expand="block" class="logout-btn text-white">
+            <ion-button
+              @click="handleLogout"
+              color="primary"
+              expand="block"
+              class="logout-btn text-white"
+            >
               Yes, logout
             </ion-button>
 
-            <ion-button @click="dismiss" fill="outline" color="dark" expand="block" class="mb-6">
+            <ion-button
+              @click="dismiss"
+              fill="outline"
+              color="dark"
+              expand="block"
+              class="mb-6"
+            >
               Cancel
             </ion-button>
           </div>
@@ -79,9 +112,13 @@
       </ion-content>
     </ion-modal>
 
-
-      <!-- Tariff Modal -->
-    <ion-modal ref="tariffModal" trigger="tariff-modal" :initial-breakpoint="0.8" :breakpoints="[0, 0.8, 1]">
+    <!-- Tariff Modal -->
+    <ion-modal
+      ref="tariffModal"
+      trigger="tariff-modal"
+      :initial-breakpoint="0.8"
+      :breakpoints="[0, 0.8, 1]"
+    >
       <ion-content class="modal-content">
         <div class="tariff-modal">
           <div class="modal-header mt-4 mb-6">
@@ -101,7 +138,12 @@
                 <li>✓ Complete IELTS Speaking simulation</li>
                 <li>✓ AI-powered feedback</li>
               </ul>
-              <ion-button @click="selectTariff('single')" expand="block" fill="outline" color="primary">
+              <ion-button
+                @click="selectTariff('single')"
+                expand="block"
+                fill="outline"
+                color="primary"
+              >
                 Choose Plan
               </ion-button>
             </div>
@@ -119,7 +161,11 @@
                 <li>✓ 6 complete IELTS Speaking simulations</li>
                 <li>✓ Advanced AI feedback</li>
               </ul>
-              <ion-button @click="selectTariff('standard')" expand="block" color="primary">
+              <ion-button
+                @click="selectTariff('standard')"
+                expand="block"
+                color="primary"
+              >
                 Choose Plan
               </ion-button>
             </div>
@@ -136,14 +182,24 @@
                 <li>✓ 20 complete IELTS Speaking simulations</li>
                 <li>✓ Advanced AI feedback</li>
               </ul>
-              <ion-button @click="selectTariff('premium')" expand="block" fill="outline" color="primary">
+              <ion-button
+                @click="selectTariff('premium')"
+                expand="block"
+                fill="outline"
+                color="primary"
+              >
                 Choose Plan
               </ion-button>
             </div>
           </div>
 
           <div class="modal-actions mt-4">
-            <ion-button @click="dismissTariff" fill="clear" color="medium" expand="block">
+            <ion-button
+              @click="dismissTariff"
+              fill="clear"
+              color="medium"
+              expand="block"
+            >
               Cancel
             </ion-button>
           </div>
@@ -154,101 +210,97 @@
 </template>
 
 <script setup>
-import {
-  Wallet,
-  Send,
-  NotebookText,
-  LogOut,
-} from 'lucide-vue-next';
-import { ref, onMounted } from 'vue';
-import { toastController } from '@ionic/vue'
-import { useRouter } from 'vue-router'
-import { useUser } from '@/composables/useUser'
+import { Wallet, Send, NotebookText, LogOut } from "lucide-vue-next";
+import { ref, onMounted } from "vue";
+import { toastController } from "@ionic/vue";
+import { useRouter } from "vue-router";
+import { useUser } from "@/composables/useUser";
+import Avatar from "@/components/Avatar.vue";
 
 const modal = ref(null);
 const tariffModal = ref(null);
-const router = useRouter()
-const { user, loadUser, logout } = useUser()
-const loading = ref(true)
-
+const router = useRouter();
+const { user, loadUser, logout } = useUser();
+const loading = ref(true);
 
 const dismiss = () => {
-  modal.value?.$el.dismiss()
-}
+  modal.value?.$el.dismiss();
+};
 
 const dismissTariff = () => {
-  tariffModal.value?.$el.dismiss()
-}
+  tariffModal.value?.$el.dismiss();
+};
 
 const selectTariff = async (tariffType) => {
   try {
     // Handle tariff selection logic here
     let amount, tests;
-    
+
     switch (tariffType) {
-      case 'single':
+      case "single":
         amount = 10000;
         tests = 1;
         break;
-      case 'standard':
+      case "standard":
         amount = 50000;
         tests = 6;
         break;
-      case 'premium':
+      case "premium":
         amount = 100000;
         tests = 20;
         break;
     }
-    
+
     // You can add payment processing logic here
-    console.log(`Selected tariff: ${tariffType}, Amount: ${amount} UZS, Tests: ${tests}`);
-    
+    console.log(
+      `Selected tariff: ${tariffType}, Amount: ${amount} UZS, Tests: ${tests}`
+    );
+
     const toast = await toastController.create({
-      message: `Selected ${tests} test${tests > 1 ? 's' : ''} for ${amount.toLocaleString()} UZS`,
+      message: `Selected ${tests} test${
+        tests > 1 ? "s" : ""
+      } for ${amount.toLocaleString()} UZS`,
       duration: 2500,
-      position: 'top',
-      color: 'success'
+      position: "top",
+      color: "success",
     });
-    
+
     await toast.present();
     dismissTariff();
-    
   } catch (error) {
     const toast = await toastController.create({
-      message: 'Error selecting tariff',
+      message: "Error selecting tariff",
       duration: 2500,
-      position: 'top',
-      color: 'danger'
+      position: "top",
+      color: "danger",
     });
     await toast.present();
   }
-}
+};
 
 const handleLogout = async () => {
   try {
-    await logout()
-    dismiss()
-    router.replace('/login')
+    await logout();
+    dismiss();
+    router.replace("/login");
   } catch (error) {
     const toast = await toastController.create({
-      message: 'Chiqishda xatolik yuz berdi',
+      message: "Chiqishda xatolik yuz berdi",
       duration: 2500,
-      position: 'top',
-      color: 'danger'
-    })
-    await toast.present()
+      position: "top",
+      color: "danger",
+    });
+    await toast.present();
   }
-}
-
+};
 
 onMounted(async () => {
-  await loadUser()
-  loading.value = false
-})
+  await loadUser();
+  loading.value = false;
+});
 </script>
 
 <style scoped>
-
 .modal-content {
   --background: #ffffff;
 }
@@ -398,14 +450,13 @@ onMounted(async () => {
     flex-direction: row;
     align-items: stretch;
   }
-  
+
   .tariff-card {
     flex: 1;
   }
-  
+
   .tariff-modal {
     padding: 2rem;
   }
 }
-
 </style>

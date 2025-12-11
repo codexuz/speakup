@@ -11,45 +11,12 @@
 
     <ion-content class="ion-padding">
       <ion-grid class="speaking-container">
-        <!-- Header Section -->
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="12" size-lg="10" size-xl="8">
-            <div class="speaking-intro">
-              <div class="hero-section">
-                <div class="hero-icon">
-                  <ion-icon :icon="micOutline"></ion-icon>
-                </div>
-                <h1 class="hero-title">Full Speaking Tests</h1>
-                <p class="hero-description">
-                  Practice your speaking skills with our comprehensive test collection.
-                  Each test simulates real IELTS exam conditions with professional feedback.
-                </p>
-              </div>
-            </div>
-          </ion-col>
-        </ion-row>
 
-        <!-- Tab Navigation -->
+        <!-- Tests Section -->
         <ion-row class="ion-justify-content-center">
-          <ion-col size="12" size-md="8" size-lg="6">
-            <ion-segment v-model="activeTab" mode="ios" class="custom-segment">
-              <ion-segment-button value="all" class="custom-segment-button">
-                <ion-icon :icon="libraryOutline" slot="start"></ion-icon>
-                <ion-label>All Tests</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="purchased" class="custom-segment-button">
-                <ion-icon :icon="checkmarkCircleOutline" slot="start"></ion-icon>
-                <ion-label>My Tests</ion-label>
-              </ion-segment-button>
-            </ion-segment>
-          </ion-col>
-        </ion-row>
-
-        <!-- All Tests Tab -->
-        <ion-row v-if="activeTab === 'all'" class="ion-justify-content-center">
           <ion-col size="12" size-lg="10" size-xl="12">
-            <div v-if="allTests.length > 0" class="tests-grid">
-              <div 
+            <div v-if="allTests.length > 0" class="tests-grid ion-padding-vertical">
+              <div
                 v-for="test in allTests"
                 :key="test.id"
                 class="test-grid-item"
@@ -68,7 +35,7 @@
 
                   <ion-card-content class="card-content">
                     <p class="test-description">{{ test.description }}</p>
-                    
+
                     <div class="test-stats">
                       <div class="stat-item">
                         <ion-icon :icon="timeOutline"></ion-icon>
@@ -85,7 +52,7 @@
                         <ion-icon :icon="diamondOutline"></ion-icon>
                         <span>{{ test.price || "10,000" }} UZS</span>
                       </div>
-                      
+
                       <ion-button
                         size="medium"
                         color="primary"
@@ -101,19 +68,24 @@
                         color="success"
                         class="action-button"
                         :router-link="`/speaking-mock/full-test/${test.id}`"
-                        v-else-if="isPurchased(test.id) && !isCompleted(test.id)"
+                        v-else-if="
+                          isPurchased(test.id) && !isCompleted(test.id)
+                        "
                       >
                         <ion-icon :icon="playOutline" slot="start"></ion-icon>
                         Start Test
                       </ion-button>
-                      <ion-button 
-                        size="medium" 
-                        color="medium" 
+                      <ion-button
+                        size="medium"
+                        color="medium"
                         class="action-button"
-                        disabled 
+                        disabled
                         v-else
                       >
-                        <ion-icon :icon="checkmarkOutline" slot="start"></ion-icon>
+                        <ion-icon
+                          :icon="checkmarkOutline"
+                          slot="start"
+                        ></ion-icon>
                         Completed
                       </ion-button>
                     </div>
@@ -123,7 +95,11 @@
             </div>
 
             <div v-else class="empty-state">
-              <ion-spinner v-if="loading" name="crescent" class="loading-spinner"></ion-spinner>
+              <ion-spinner
+                v-if="loading"
+                name="crescent"
+                class="loading-spinner"
+              ></ion-spinner>
               <div v-else class="empty-content">
                 <div class="empty-icon">
                   <ion-icon :icon="documentTextOutline"></ion-icon>
@@ -134,90 +110,8 @@
             </div>
           </ion-col>
         </ion-row>
-
-        <!-- Purchased Tests Tab -->
-        <ion-row v-else-if="activeTab === 'purchased'" class="ion-justify-content-center">
-          <ion-col size="12" size-lg="10" size-xl="12">
-            <div v-if="userPurchases.length > 0" class="tests-grid">
-              <div 
-                v-for="purchase in userPurchases"
-                :key="purchase.id"
-                class="test-grid-item"
-              >
-                <ion-card class="test-card owned-card">
-                  <div class="owned-badge">
-                    <ion-icon :icon="checkmarkCircle"></ion-icon>
-                    <span>Owned</span>
-                  </div>
-                  <ion-card-header class="card-header">
-                    <ion-card-title class="test-title">
-                      {{ purchase.title }}
-                    </ion-card-title>
-                    <div class="test-level">{{ purchase.level || "All Levels" }}</div>
-                  </ion-card-header>
-
-                  <ion-card-content class="card-content">
-                    <p class="test-description">{{ purchase.description }}</p>
-                    
-                    <div class="test-status">
-                      <div class="status-indicator" :class="purchase.status === 'new' ? 'status-ready' : 'status-completed'">
-                        <ion-icon :icon="purchase.status === 'new' ? playCircle : checkmarkCircle"></ion-icon>
-                        <span>{{ purchase.status === 'new' ? 'Ready to start' : 'Completed' }}</span>
-                      </div>
-                    </div>
-
-                    <div class="test-actions single-action">
-                      <ion-button
-                        expand="block"
-                        color="success"
-                        class="start-button"
-                        :router-link="`/speaking-mock/full-test/abe2b4b2-baab-4b3e-a440-a8d178166f61`"
-                        v-if="purchase.status === 'new'"
-                      >
-                        <ion-icon :icon="playOutline" slot="start"></ion-icon>
-                        Start Test 
-                      </ion-button>
-                      <ion-button
-                        expand="block"
-                        color="medium"
-                        class="completed-button"
-                        disabled
-                        v-else
-                      >
-                        <ion-icon :icon="checkmarkOutline" slot="start"></ion-icon>
-                        Completed
-                      </ion-button>
-                    </div>
-                  </ion-card-content>
-                </ion-card>
-              </div>
-            </div>
-
-            <div v-else class="empty-state">
-              <ion-spinner v-if="loading" name="crescent" class="loading-spinner"></ion-spinner>
-              <div v-else class="empty-content">
-                <div class="empty-icon">
-                  <ion-icon :icon="bagOutline"></ion-icon>
-                </div>
-                <h3 class="empty-title">No purchased tests</h3>
-                <p class="empty-description">Purchase tests from the "All Tests" tab to start practicing</p>
-                <ion-button 
-                  color="primary" 
-                  fill="outline"
-                  @click="activeTab = 'all'"
-                  class="browse-button"
-                >
-                  <ion-icon :icon="storefrontOutline" slot="start"></ion-icon>
-                  Browse Tests
-                </ion-button>
-              </div>
-            </div>
-          </ion-col>
-        </ion-row>
       </ion-grid>
     </ion-content>
-
-
   </ion-page>
 </template>
 
@@ -227,11 +121,9 @@ import { useRouter } from "vue-router";
 import { toastController, alertController } from "@ionic/vue";
 import endpoints from "@/utils/apiEndpoints";
 import { useUser } from "@/composables/useUser";
-import { 
-  playOutline, 
+import {
+  playOutline,
   micOutline,
-  libraryOutline,
-  checkmarkCircleOutline,
   trophyOutline,
   timeOutline,
   peopleOutline,
@@ -239,17 +131,12 @@ import {
   cardOutline,
   checkmarkOutline,
   documentTextOutline,
-  checkmarkCircle,
-  bagOutline,
-  storefrontOutline,
-  playCircle
 } from "ionicons/icons";
 const router = useRouter();
 const { user, updateUser } = useUser();
 const tests = ref([]);
 const userPurchases = ref([]);
 const loading = ref(true);
-const activeTab = ref("all");
 
 // Computed properties for filtered tests
 const allTests = computed(() => tests.value);
@@ -309,7 +196,7 @@ const purchaseTest = async (testId) => {
       message: "Test not found.",
       duration: 3000,
       color: "danger",
-      position: "bottom"
+      position: "bottom",
     });
     await toast.present();
     return;
@@ -320,7 +207,7 @@ const purchaseTest = async (testId) => {
       message: "Please login to purchase tests.",
       duration: 3000,
       color: "warning",
-      position: "bottom"
+      position: "bottom",
     });
     await toast.present();
     return;
@@ -334,7 +221,7 @@ const purchaseTest = async (testId) => {
       message: `Insufficient balance. You need ${testCost} UZS to purchase this test.`,
       duration: 4000,
       color: "danger",
-      position: "bottom"
+      position: "bottom",
     });
     await toast.present();
     return;
@@ -342,17 +229,17 @@ const purchaseTest = async (testId) => {
 
   // Show confirmation alert
   const alert = await alertController.create({
-    header: 'Confirm Purchase',
+    header: "Confirm Purchase",
     message: `Do you want to purchase "${test.title}" for ${testCost} UZS?`,
     buttons: [
       {
-        text: 'Cancel',
-        role: 'cancel',
-        cssClass: 'secondary',
+        text: "Cancel",
+        role: "cancel",
+        cssClass: "secondary",
       },
       {
-        text: 'Purchase',
-        role: 'confirm',
+        text: "Purchase",
+        role: "confirm",
         handler: async () => {
           await processPurchase(testId, testCost);
         },
@@ -373,7 +260,7 @@ const processPurchase = async (testId, testCost) => {
       user_id: user.value.id,
       status: "new",
       test_id: testId,
-      cost: testCost
+      cost: testCost,
     });
 
     // Update user balance locally after successful purchase
@@ -387,20 +274,19 @@ const processPurchase = async (testId, testCost) => {
       message: "Test purchased successfully! You can now start the test.",
       duration: 3000,
       color: "success",
-      position: "bottom"
+      position: "bottom",
     });
     await toast.present();
 
     // Reload data to update UI
     await loadData();
-
   } catch (error) {
     console.error("Failed to purchase test:", error);
     const toast = await toastController.create({
       message: "No sufficient balance. Please top up your balance.",
       duration: 3000,
       color: "danger",
-      position: "bottom"
+      position: "bottom",
     });
     await toast.present();
   } finally {
@@ -424,7 +310,11 @@ onMounted(() => {
 .hero-section {
   text-align: center;
   padding: 2rem 0 3rem;
-  background: linear-gradient(135deg, oklch(0.7 0.15 250) 0%, oklch(0.8 0.1 200) 100%);
+  background: linear-gradient(
+    135deg,
+    oklch(0.7 0.15 250) 0%,
+    oklch(0.8 0.1 200) 100%
+  );
   border-radius: 24px;
   margin-bottom: 2rem;
   position: relative;
@@ -432,13 +322,17 @@ onMounted(() => {
 }
 
 .hero-section::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
   pointer-events: none;
 }
 
@@ -546,7 +440,11 @@ onMounted(() => {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, oklch(0.7 0.15 250) 0%, oklch(0.8 0.1 200) 100%);
+  background: linear-gradient(
+    90deg,
+    oklch(0.7 0.15 250) 0%,
+    oklch(0.8 0.1 200) 100%
+  );
 }
 
 /* Card Header */
@@ -559,7 +457,11 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, oklch(0.95 0.05 250) 0%, oklch(0.97 0.03 200) 100%);
+  background: linear-gradient(
+    135deg,
+    oklch(0.95 0.05 250) 0%,
+    oklch(0.97 0.03 200) 100%
+  );
   color: oklch(0.5 0.15 250);
   padding: 0.5rem 1rem;
   border-radius: 12px;
@@ -686,7 +588,8 @@ onMounted(() => {
   letter-spacing: normal;
 }
 
-.start-button, .completed-button {
+.start-button,
+.completed-button {
   --border-radius: 12px;
   font-weight: 600;
   text-transform: none;
@@ -753,16 +656,16 @@ onMounted(() => {
   .hero-title {
     font-size: 2rem;
   }
-  
+
   .hero-description {
     font-size: 1rem;
   }
-  
+
   .test-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .price-tag {
     justify-content: center;
   }
