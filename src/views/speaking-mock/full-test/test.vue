@@ -16,9 +16,11 @@
       <ion-grid>
         <ion-row class="ion-justify-content-center">
           <ion-col size="12" size-md="8" size-lg="6" size-xl="5">
-
             <!-- Loading Spinner -->
-            <div v-if="isLoading" class="flex items-center justify-center h-full">
+            <div
+              v-if="isLoading"
+              class="flex items-center justify-center h-full"
+            >
               <ion-spinner name="crescent"></ion-spinner>
               <p class="ml-2 text-lg">Loading test...</p>
             </div>
@@ -29,18 +31,30 @@
                 <ion-card-content class="intro-content">
                   <!-- Large Microphone Icon -->
                   <div class="flex items-center justify-center mb-4">
-                    <micIcon class="text-slate-900" style="width: 90px; height: 90px;" />
+                    <micIcon
+                      class="text-slate-900"
+                      style="width: 90px; height: 90px"
+                    />
                   </div>
 
                   <!-- Speaking Exam Title -->
                   <div class="mb-6">
-                    <ion-card-title class="poppins-bold text-2xl">Speaking Exam</ion-card-title>
-                    <ion-card-subtitle style="font-size: 12px;" class="poppins-regular">Practice your speaking
-                      skills</ion-card-subtitle>
+                    <ion-card-title class="poppins-bold text-2xl"
+                      >Speaking Exam</ion-card-title
+                    >
+                    <ion-card-subtitle
+                      style="font-size: 12px"
+                      class="poppins-regular"
+                      >Practice your speaking skills</ion-card-subtitle
+                    >
                   </div>
 
                   <!-- Start Button -->
-                  <ion-button expand="block" color="dark" @click="initializeExam">
+                  <ion-button
+                    expand="block"
+                    color="dark"
+                    @click="initializeExam"
+                  >
                     Start Speaking Exam
                   </ion-button>
                 </ion-card-content>
@@ -53,27 +67,46 @@
               <div class="progress-section">
                 <div class="part-indicators">
                   <ion-segment v-model="currentPart" color="dark" disabled>
-                    <ion-segment-button value="1.1" :class="{ 'active-part': currentPart === '1.1' }">
+                    <ion-segment-button
+                      value="1.1"
+                      :class="{ 'active-part': currentPart === '1.1' }"
+                    >
                       <ion-label>Part 1.1</ion-label>
                     </ion-segment-button>
-                    <ion-segment-button value="1.2" :class="{ 'active-part': currentPart === '1.2' }">
+                    <ion-segment-button
+                      value="1.2"
+                      :class="{ 'active-part': currentPart === '1.2' }"
+                    >
                       <ion-label>Part 1.2</ion-label>
                     </ion-segment-button>
-                    <ion-segment-button value="2" :class="{ 'active-part': currentPart === '2' }">
+                    <ion-segment-button
+                      value="2"
+                      :class="{ 'active-part': currentPart === '2' }"
+                    >
                       <ion-label>Part 2</ion-label>
                     </ion-segment-button>
-                    <ion-segment-button value="3" :class="{ 'active-part': currentPart === '3' }">
+                    <ion-segment-button
+                      value="3"
+                      :class="{ 'active-part': currentPart === '3' }"
+                    >
                       <ion-label>Part 3</ion-label>
                     </ion-segment-button>
                   </ion-segment>
                 </div>
 
                 <!-- Question number indicators for Part 1.1 and 1.2 -->
-                <div v-if="currentPart === '1.1' || currentPart === '1.2'" class="question-progress mt-2">
-                  <div v-for="(_, index) in currentPart === '1.1'
-                    ? part1_1Questions
-                    : part1_2Questions" :key="index" class="question-dot"
-                    :class="{ 'active-dot': index === currentQuestionIndex }"></div>
+                <div
+                  v-if="currentPart === '1.1' || currentPart === '1.2'"
+                  class="question-progress mt-2"
+                >
+                  <div
+                    v-for="(_, index) in currentPart === '1.1'
+                      ? part1_1Questions
+                      : part1_2Questions"
+                    :key="index"
+                    class="question-dot"
+                    :class="{ 'active-dot': index === currentQuestionIndex }"
+                  ></div>
                 </div>
               </div>
 
@@ -82,8 +115,12 @@
                 <ion-card-content>
                   <div class="question-header">
                     <div class="question-status">
-                      <span v-if="isPrepTime" class="prep-time-tag">Prep Time</span>
-                      <span v-else-if="isRecording" class="recording-tag">Recording</span>
+                      <span v-if="isPrepTime" class="prep-time-tag"
+                        >Prep Time</span
+                      >
+                      <span v-else-if="isRecording" class="recording-tag"
+                        >Recording</span
+                      >
                     </div>
                     <ion-buttons>
                       <ion-button fill="clear" @click="decreaseFontSize">
@@ -95,12 +132,21 @@
                     </ion-buttons>
                   </div>
 
-                  <div class="question-content" :style="{ fontSize: fontSize + 'px' }"
-                    v-html="currentQuestion?.question"></div>
+                  <div
+                    class="question-content"
+                    :style="{ fontSize: fontSize + 'px' }"
+                    v-html="currentQuestion?.question"
+                  ></div>
 
                   <!-- Image for Part 1.2 -->
-                  <div v-if="currentQuestion?.image_url" class="question-image-container">
-                    <img :src="currentQuestion.image_url" class="question-image" />
+                  <div
+                    v-if="currentQuestion?.image_url"
+                    class="question-image-container"
+                  >
+                    <img
+                      :src="currentQuestion.image_url"
+                      class="question-image"
+                    />
                   </div>
                 </ion-card-content>
               </ion-card>
@@ -109,10 +155,26 @@
               <div class="timer-container">
                 <div class="circular-timer">
                   <svg class="progress-ring" width="120" height="120">
-                    <circle class="progress-ring-circle-bg" cx="60" cy="60" r="50" fill="transparent"
-                      stroke="rgba(255,255,255,0.2)" stroke-width="6" />
-                    <circle class="progress-ring-circle" cx="60" cy="60" r="50" fill="transparent" stroke="#3880ff"
-                      stroke-width="6" :stroke-dasharray="314" :stroke-dashoffset="314 - (timerProgress * 314)" />
+                    <circle
+                      class="progress-ring-circle-bg"
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      fill="transparent"
+                      stroke="rgba(255,255,255,0.2)"
+                      stroke-width="6"
+                    />
+                    <circle
+                      class="progress-ring-circle"
+                      cx="60"
+                      cy="60"
+                      r="50"
+                      fill="transparent"
+                      stroke="#3880ff"
+                      stroke-width="6"
+                      :stroke-dasharray="314"
+                      :stroke-dashoffset="314 - timerProgress * 314"
+                    />
                   </svg>
                   <div class="timer-content">
                     <div class="timer-text">{{ formattedTime }}</div>
@@ -126,7 +188,9 @@
             <div v-if="examFinished" class="test-finished-overlay">
               <ion-card class="completion-card ion-padding">
                 <ion-card-header>
-                  <ion-card-title class="text-center p-3">Test Completed</ion-card-title>
+                  <ion-card-title class="text-center p-3"
+                    >Test Completed</ion-card-title
+                  >
                 </ion-card-header>
                 <ion-card-content>
                   <div v-if="isUploading" class="uploading-indicator">
@@ -134,9 +198,16 @@
                     <p>Uploading your recording...</p>
                   </div>
                   <div v-else class="completion-message">
-                    <ion-icon :icon="checkmarkCircleOutline" size="large"></ion-icon>
+                    <ion-icon
+                      :icon="checkmarkCircleOutline"
+                      size="large"
+                    ></ion-icon>
                     <p>Your test has been successfully submitted!</p>
-                    <ion-button expand="block" @click="() => router.replace('/speaking-mock')" class="mt-4">
+                    <ion-button
+                      expand="block"
+                      @click="() => router.replace('/speaking-mock')"
+                      class="mt-4"
+                    >
                       Return to Speaking Tests
                     </ion-button>
                   </div>
@@ -145,26 +216,27 @@
             </div>
 
             <!-- Next Button for iOS -->
-            <div v-if="
-              platform === 'ios' &&
-              !initialState &&
-              !examFinished &&
-              !isRecording &&
-              !isPrepTime
-            " class="next-button-container">
+            <div
+              v-if="
+                platform === 'ios' &&
+                !initialState &&
+                !examFinished &&
+                !isRecording &&
+                !isPrepTime
+              "
+              class="next-button-container"
+            >
               <ion-button @click="handleNextButtonClick" class="next-button">
                 Next
                 <ion-icon slot="end" :icon="chevronForwardOutline"></ion-icon>
               </ion-button>
             </div>
-
           </ion-col>
         </ion-row>
       </ion-grid>
     </ion-content>
   </ion-page>
 </template>
-
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
@@ -309,15 +381,16 @@ const initializeExam = async () => {
       const { alertController } = await import("@ionic/vue");
       const alert = await alertController.create({
         header: "Microphone Error",
-        message: "Could not access microphone. Please check permissions and try again.",
+        message:
+          "Could not access microphone. Please check permissions and try again.",
         buttons: [
           {
             text: "Go Back",
             handler: () => {
               initialState.value = true;
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
       await alert.present();
       return; // Exit early if recording fails
@@ -334,7 +407,7 @@ const initializeExam = async () => {
     const alert = await alertController.create({
       header: "Initialization Error",
       message: "Could not initialize the test. Please try again.",
-      buttons: ["OK"]
+      buttons: ["OK"],
     });
     await alert.present();
   }
@@ -515,7 +588,7 @@ const finishExam = async () => {
     const alert = await alertController.create({
       header: "Recording Error",
       message: "There was a problem with your recording. Please try again.",
-      buttons: ["OK"]
+      buttons: ["OK"],
     });
     await alert.present();
   }
@@ -532,7 +605,11 @@ const saveRecording = async (audioBlob) => {
 
     // Log form data for debugging
     for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value instanceof Blob ? 'Blob of size ' + value.size : value}`);
+      console.log(
+        `${key}: ${
+          value instanceof Blob ? "Blob of size " + value.size : value
+        }`
+      );
     }
 
     const uploadResponse = await endpoints.speaking.saveRecording(formData);
@@ -540,7 +617,10 @@ const saveRecording = async (audioBlob) => {
 
     if (uploadResponse) {
       // Check which property contains the URL
-      const fileUrl = uploadResponse.file_url || uploadResponse.url || uploadResponse.audio_url;
+      const fileUrl =
+        uploadResponse.file_url ||
+        uploadResponse.url ||
+        uploadResponse.audio_url;
 
       if (!fileUrl) {
         console.error("No file URL in response:", uploadResponse);
@@ -555,7 +635,9 @@ const saveRecording = async (audioBlob) => {
       };
 
       console.log("Saving response data:", responseData);
-      const saveResponse = await endpoints.speaking.uploadResponse(responseData);
+      const saveResponse = await endpoints.speaking.uploadResponse(
+        responseData
+      );
       console.log("Response saved successfully:", saveResponse);
     } else {
       throw new Error("No upload response received");
@@ -660,17 +742,15 @@ const handleBeforeUnload = (event) => {
   // Only show confirmation if test is in progress
   if (!initialState.value && !examFinished.value) {
     event.preventDefault();
-    event.returnValue = "Are you sure you want to exit the test? Your progress will be lost.";
+    event.returnValue =
+      "Are you sure you want to exit the test? Your progress will be lost.";
     router.back();
     return event.returnValue;
   }
 };
 
-// Set up back button handling
-App.addListener("backButton", async () => {
-  await showExitConfirmation();
-});
-
+// Store back button listener handle
+let backButtonListenerHandle = null;
 
 onMounted(async () => {
   await loadUser();
@@ -678,17 +758,27 @@ onMounted(async () => {
   await getDevicePlatform();
 
   // Add beforeunload event listener for page exit confirmation
-  window.addEventListener('beforeunload', handleBeforeUnload);
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  // Set up back button handling for this page only
+  backButtonListenerHandle = await App.addListener("backButton", async () => {
+    await showExitConfirmation();
+  });
 
   // Note: Microphone permissions will be checked when the test starts
   console.log("Test page loaded successfully");
 });
 
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
   clearInterval(timerInterval.value);
 
   // Remove beforeunload event listener
-  window.removeEventListener('beforeunload', handleBeforeUnload);
+  window.removeEventListener("beforeunload", handleBeforeUnload);
+
+  // Remove back button handler for this page
+  if (backButtonListenerHandle) {
+    await backButtonListenerHandle.remove();
+  }
 
   // Ensure recording is stopped
   try {
@@ -696,11 +786,8 @@ onBeforeUnmount(() => {
   } catch (error) {
     console.error("Error stopping recording:", error);
   }
-
-  // Remove back button handler
 });
 </script>
-
 
 <style scoped>
 /* Introduction Screen Styles */
