@@ -46,6 +46,20 @@
                     }}</ion-label>
                   </ion-item>
                   <ion-item
+                    :button="true"
+                    @click="handleCheckUpdate"
+                    v-if="!isWeb"
+                  >
+                    <RefreshCw class="w-5 h-5 mr-3" slot="start" />
+                    <ion-label>Check for Updates</ion-label>
+                    <ion-label
+                      v-if="appCurrentVersion"
+                      slot="end"
+                      class="text-gray-500"
+                      >v{{ appCurrentVersion }}</ion-label
+                    >
+                  </ion-item>
+                  <ion-item
                     href="https://t.me/javlon_developer"
                     target="_blank"
                     :button="true"
@@ -210,18 +224,43 @@
 </template>
 
 <script setup>
-import { Wallet, Send, NotebookText, LogOut } from "lucide-vue-next";
-import { ref, onMounted } from "vue";
-import { toastController } from "@ionic/vue";
+import { Wallet, Send, NotebookText, LogOut, RefreshCw } from "lucide-vue-next";
+import { ref, onMounted, computed } from "vue";
+import { toastController, alertController } from "@ionic/vue";
 import { useRouter } from "vue-router";
 import { useUser } from "@/composables/useUser";
 import Avatar from "@/components/Avatar.vue";
+import { Capacitor } from "@capacitor/core";
+import { useAppUpdate } from "@/composables/useAppUpdate";
 
 const modal = ref(null);
 const tariffModal = ref(null);
 const router = useRouter();
 const { user, loadUser, logout } = useUser();
 const loading = ref(true);
+
+// App update
+const {
+  currentVersion,
+  availableVersion,
+  updateAvailable,
+  checkForUpdate,
+  openAppStore,
+  performImmediateUpdate,
+} = useAppUpdate();
+
+const isWeb = computed(() => Capacitor.getPlatform() === "web");
+const appCurrentVersion = ref("");
+
+// Get current version on mount
+onMounted(async () => {
+  await loadUser();
+  loading.value = false;
+
+  if (!isWeb.value) {
+    appCurrentVersion.value = currentVersion.value;
+  }
+});
 
 const dismiss = () => {
   modal.value?.$el.dismiss();
@@ -294,10 +333,57 @@ const handleLogout = async () => {
   }
 };
 
-onMounted(async () => {
-  await loadUser();
-  loading.value = false;
-});
+const handleCheckUpdate = async () => {
+  const toast = await toastController.create({
+    message: "Checking for updates...",
+    duration: 1500,
+    position: "top",
+  });
+  await toast.present();
+
+  try {
+    const hasUpdate = await checkForUpdate();
+
+    if (hasUpdate) {
+      const alert = await alertController.create({
+        header: "Update Available",
+        message: `A new version (${availableVersion.value}) is available. Current version: ${currentVersion.value}`,
+        buttons: [
+          {
+            text: "Later",
+            role: "cancel",
+          },
+          {
+            text: "Update Now",
+            handler: async () => {
+              const updated = await performImmediateUpdate();
+              if (!updated) {
+                await openAppStore();
+              }
+            },
+          },
+        ],
+      });
+      await alert.present();
+    } else {
+      const successToast = await toastController.create({
+        message: "You're running the latest version!",
+        duration: 2500,
+        position: "top",
+        color: "success",
+      });
+      await successToast.present();
+    }
+  } catch (error) {
+    const errorToast = await toastController.create({
+      message: "Failed to check for updates",
+      duration: 2500,
+      position: "top",
+      color: "danger",
+    });
+    await errorToast.present();
+  }
+};
 </script>
 
 <style scoped>
