@@ -8,11 +8,9 @@ const config: CapacitorConfig = {
     androidScheme: 'http'
   },
   plugins:{
-    GoogleAuth: {
-      scopes: ['profile', 'email'],
-      serverClientId: '562146186124-sm1g78mcu2q6u58j2tvfnapd1lu3jg85.apps.googleusercontent.com',
-      forceCodeForRefreshToken: true,
-    }
+    EdgeToEdge: {
+      backgroundColor: "#f7f7f7",
+    },
   }
 };
 
